@@ -1255,3 +1255,9 @@ input[type="checkbox"] { accent-color: var(--primary); cursor: pointer; }
   gap: 3px;
   min-width: 0;
 }
+
+.media-item.selected {
+  border-color: var(--primary);
+  background: rgba(59, 130, 246, 0.1);
+}
+

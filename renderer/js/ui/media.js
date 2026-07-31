@@ -55,19 +55,24 @@ function renderMedia() {
       }
 
       return `
-        <div class="media-card ${isSelected ? 'selected' : ''}" data-path="${m.path}">
-          <label class="custom-checkbox-container media-checkbox">
+        <div class="media-item ${isSelected ? 'selected' : ''}" data-path="${m.path}">
+          <label class="custom-checkbox-container media-checkbox" style="position: absolute; top: 8px; left: 8px; z-index: 10;">
             <input type="checkbox" class="media-select-cb" value="${m.path}" ${isSelected ? 'checked' : ''}>
             <span class="custom-checkmark"></span>
           </label>
-          ${thumbHtml}
-          <div class="media-info">
-            <div class="media-name" title="${m.name}">${m.name}</div>
-            <div class="media-meta">
-              <span>${m.sizeStr}</span>
-              <button class="action-btn action-delete-media" data-path="${m.path}" title="Xóa">
-                <svg viewBox="0 0 24 24" width="14" height="14" stroke="var(--danger)" fill="none" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+          <div class="media-thumb-wrap">
+            ${thumbHtml}
+            <div class="media-overlay">
+              <button class="media-action-btn danger action-delete-media" data-path="${m.path}" title="Xóa">
+                <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
               </button>
+            </div>
+            ${m.type === 'video' ? '<div class="media-type-badge">VIDEO</div>' : ''}
+          </div>
+          <div class="media-info">
+            <div class="media-name" style="font-size: 13px; font-weight: 600; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${m.name}">${m.name}</div>
+            <div class="media-meta" style="font-size: 11px; color: var(--text-dim); margin-top: 4px;">
+              <span>${m.sizeStr}</span>
             </div>
           </div>
         </div>
@@ -106,7 +111,7 @@ function attachMediaEvents() {
       if (e.target.checked) selectedMedia.add(p);
       else selectedMedia.delete(p);
       
-      const card = e.target.closest('.media-card');
+      const card = e.target.closest('.media-item');
       if (e.target.checked) card.classList.add('selected');
       else card.classList.remove('selected');
       
@@ -114,7 +119,7 @@ function attachMediaEvents() {
     });
   });
 
-  const cards = mediaEls.grid.querySelectorAll('.media-card');
+  const cards = mediaEls.grid.querySelectorAll('.media-item');
   cards.forEach(card => {
     card.addEventListener('click', (e) => {
       if (e.target.closest('.media-checkbox') || e.target.closest('.action-delete-media')) return;
