@@ -198,24 +198,26 @@ ipcMain.handle('media:getList', async () => {
         // Extract serial from filename assuming format: type_serial_timestamp.ext
         const parts = item.split('_');
         const serial = parts.length >= 2 ? parts[1] : 'unknown';
+        const sizeInMB = (stat.size / (1024 * 1024)).toFixed(2);
         files.push({
           name: item,
           path: fullPath,
           url: `file://${fullPath}`,
           type,
           serial,
-          mtime: stat.mtimeMs
+          mtime: stat.mtimeMs,
+          sizeStr: `${sizeInMB} MB`
         });
       }
     }
-  };
-  
-  readDir(screenshotDir, 'image');
-  readDir(recordDir, 'video');
-  
-  // Sort by newest first
-  files.sort((a, b) => b.mtime - a.mtime);
-  return files;
+    };
+    
+    readDir(screenshotDir, 'image');
+    readDir(recordDir, 'video');
+    
+    // Sort by newest first
+    files.sort((a, b) => b.mtime - a.mtime);
+    return { success: true, files };
 });
 
 ipcMain.handle('media:openFile', async (event, filePath) => {
