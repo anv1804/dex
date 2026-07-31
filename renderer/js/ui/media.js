@@ -3,17 +3,20 @@ import { showToast } from './toast.js';
 const mediaEls = {
   grid: document.getElementById('media-grid'),
   btnRefresh: document.getElementById('btn-refresh-media'),
-  filterType: document.getElementById('media-filter-type'),
+  filterType: document.getElementById('media-type-filter'),
+  filterDevice: document.getElementById('media-filter'),
   selectAll: document.getElementById('media-select-all'),
   bulkActions: document.getElementById('media-bulk-actions'),
-  btnDeleteSelected: document.getElementById('btn-delete-selected-media'),
+  btnDeleteSelected: document.getElementById('btn-bulk-delete-media'),
+  btnOpenFolder: document.getElementById('btn-open-media-folder'),
   emptyState: document.getElementById('media-empty-state'),
-  selectedCount: document.getElementById('media-selected-count')
+  selectedCount: document.getElementById('media-bulk-count')
 };
 
 let mediaList = [];
 let selectedMedia = new Set();
 let fileToDelete = null;
+let fileToRename = null;
 
 export async function fetchMedia() {
   if (!window.dex) return;
@@ -34,7 +37,10 @@ function renderMedia() {
   
   let filtered = mediaList;
   if (mediaEls.filterType && mediaEls.filterType.value !== 'all') {
-    filtered = mediaList.filter(m => m.type === mediaEls.filterType.value);
+    filtered = filtered.filter(m => m.type === mediaEls.filterType.value);
+  }
+  if (mediaEls.filterDevice && mediaEls.filterDevice.value !== 'all') {
+    filtered = filtered.filter(m => m.serial === mediaEls.filterDevice.value);
   }
 
   if (filtered.length === 0) {
@@ -91,9 +97,13 @@ function renderMedia() {
 }
 
 function updateMediaSelectionUI() {
-  const filtered = mediaEls.filterType && mediaEls.filterType.value !== 'all' 
-    ? mediaList.filter(m => m.type === mediaEls.filterType.value) 
-    : mediaList;
+  let filtered = mediaList;
+  if (mediaEls.filterType && mediaEls.filterType.value !== 'all') {
+    filtered = filtered.filter(m => m.type === mediaEls.filterType.value);
+  }
+  if (mediaEls.filterDevice && mediaEls.filterDevice.value !== 'all') {
+    filtered = filtered.filter(m => m.serial === mediaEls.filterDevice.value);
+  }
 
   if (mediaEls.selectAll) {
     mediaEls.selectAll.checked = filtered.length > 0 && selectedMedia.size === filtered.length;
@@ -130,7 +140,7 @@ function attachMediaEvents() {
     card.addEventListener('click', (e) => {
       if (e.target.closest('.media-checkbox') || e.target.closest('.media-action-btn')) return;
       const p = card.dataset.path;
-      if (window.dex) window.dex.openFile(p);
+      if (window.dex) window.dex.openMediaFile(p);
     });
   });
 
@@ -138,27 +148,26 @@ function attachMediaEvents() {
   openBtns.forEach(btn => {
     btn.addEventListener('click', () => {
       const p = btn.dataset.path;
-      if (window.dex) window.dex.openFile(p);
+      if (window.dex) window.dex.openMediaFile(p);
     });
   });
 
   const renameBtns = mediaEls.grid.querySelectorAll('.action-rename-media');
   renameBtns.forEach(btn => {
-    btn.addEventListener('click', async () => {
-      const p = btn.dataset.path;
-      // Get the old filename (without extension for ease of editing, or with extension)
-      const parts = p.split(/[\/\\]/);
+    btn.addEventListener('click', () => {
+      fileToRename = btn.dataset.path;
+      const parts = fileToRename.split(/[\/\\]/);
       const oldName = parts[parts.length - 1];
-      const newName = prompt('Nhập tên file mới (không bao gồm đuôi file):', oldName.split('.')[0]);
-      if (newName && newName.trim() !== '') {
-        const res = await window.dex.renameFile({ oldPath: p, newName: newName.trim() });
-        if (res && res.success) {
-          showToast('Đổi tên file thành công', 'success');
-          fetchMedia();
-        } else {
-          showToast(res.error || 'Lỗi khi đổi tên', 'danger');
-        }
-      }
+      const baseName = oldName.substring(0, oldName.lastIndexOf('.'));
+      const ext = oldName.substring(oldName.lastIndexOf('.'));
+      
+      const modal = document.getElementById('rename-modal');
+      const input = document.getElementById('input-rename-file');
+      const hint = document.getElementById('rename-ext-hint');
+      
+      if (input) input.value = baseName;
+      if (hint) hint.textContent = `Đuôi file: ${ext}`;
+      if (modal) modal.style.display = 'flex';
     });
   });
 
@@ -178,14 +187,42 @@ export function initMedia() {
   if (mediaEls.btnRefresh) {
     mediaEls.btnRefresh.addEventListener('click', fetchMedia);
   }
+  if (mediaEls.btnOpenFolder) {
+    mediaEls.btnOpenFolder.addEventListener('click', () => {
+      if (window.dex) window.dex.openMediaFolder();
+    });
+  }
   if (mediaEls.filterType) {
     mediaEls.filterType.addEventListener('change', renderMedia);
   }
+  if (mediaEls.filterDevice) {
+    mediaEls.filterDevice.addEventListener('change', renderMedia);
+  }
+  
+  // Populate device filter
+  if (window.dex) {
+    window.dex.getDevices().then(res => {
+      if (res && res.devices && mediaEls.filterDevice) {
+        mediaEls.filterDevice.innerHTML = '<option value="all">Tất cả thiết bị</option>';
+        res.devices.forEach(d => {
+          const opt = document.createElement('option');
+          opt.value = d.serial;
+          opt.textContent = `${d.model || 'Thiết bị'} (${d.serial})`;
+          mediaEls.filterDevice.appendChild(opt);
+        });
+      }
+    });
+  }
+
   if (mediaEls.selectAll) {
     mediaEls.selectAll.addEventListener('change', (e) => {
-      const filtered = mediaEls.filterType.value !== 'all' 
-        ? mediaList.filter(m => m.type === mediaEls.filterType.value) 
-        : mediaList;
+      let filtered = mediaList;
+      if (mediaEls.filterType && mediaEls.filterType.value !== 'all') {
+        filtered = filtered.filter(m => m.type === mediaEls.filterType.value);
+      }
+      if (mediaEls.filterDevice && mediaEls.filterDevice.value !== 'all') {
+        filtered = filtered.filter(m => m.serial === mediaEls.filterDevice.value);
+      }
       
       if (e.target.checked) {
         filtered.forEach(m => selectedMedia.add(m.path));
@@ -201,7 +238,7 @@ export function initMedia() {
       if (selectedMedia.size === 0) return;
       if (confirm(`Bạn có chắc muốn xóa ${selectedMedia.size} file đã chọn?`)) {
         for (const p of selectedMedia) {
-          await window.dex.deleteFile(p);
+          await window.dex.deleteMediaFile(p);
         }
         showToast(`Đã xóa ${selectedMedia.size} file`, 'success');
         fetchMedia();
@@ -220,7 +257,7 @@ export function initMedia() {
 
   if (btnConfirm) btnConfirm.addEventListener('click', async () => {
     if (fileToDelete) {
-      await window.dex.deleteFile(fileToDelete);
+      await window.dex.deleteMediaFile(fileToDelete);
       showToast('Đã xóa file', 'success');
       if (modal) modal.style.display = 'none';
       fileToDelete = null;
@@ -233,6 +270,40 @@ export function initMedia() {
       if (e.target === modal) {
         modal.style.display = 'none';
         fileToDelete = null;
+      }
+    });
+  }
+
+  // Rename modal logic
+  const renameModal = document.getElementById('rename-modal');
+  const btnCancelRename = document.getElementById('btn-cancel-rename');
+  const btnConfirmRename = document.getElementById('btn-confirm-rename');
+  const renameInput = document.getElementById('input-rename-file');
+
+  if (btnCancelRename) btnCancelRename.addEventListener('click', () => {
+    if (renameModal) renameModal.style.display = 'none';
+    fileToRename = null;
+  });
+
+  if (btnConfirmRename) btnConfirmRename.addEventListener('click', async () => {
+    if (fileToRename && renameInput && renameInput.value.trim() !== '') {
+      const res = await window.dex.renameMediaFile(fileToRename, renameInput.value.trim());
+      if (res && res.success) {
+        showToast('Đổi tên file thành công', 'success');
+        if (renameModal) renameModal.style.display = 'none';
+        fileToRename = null;
+        fetchMedia();
+      } else {
+        showToast(res.error || 'Lỗi khi đổi tên', 'danger');
+      }
+    }
+  });
+
+  if (renameModal) {
+    renameModal.addEventListener('click', (e) => {
+      if (e.target === renameModal) {
+        renameModal.style.display = 'none';
+        fileToRename = null;
       }
     });
   }
