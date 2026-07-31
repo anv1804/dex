@@ -63,6 +63,12 @@ function renderMedia() {
           <div class="media-thumb-wrap">
             ${thumbHtml}
             <div class="media-overlay">
+              <button class="media-action-btn action-open-media" data-path="${m.path}" title="Mở">
+                <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+              </button>
+              <button class="media-action-btn action-rename-media" data-path="${m.path}" title="Đổi tên">
+                <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2"><polygon points="16 3 21 8 8 21 3 21 3 16 16 3"></polygon></svg>
+              </button>
               <button class="media-action-btn danger action-delete-media" data-path="${m.path}" title="Xóa">
                 <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
               </button>
@@ -122,9 +128,37 @@ function attachMediaEvents() {
   const cards = mediaEls.grid.querySelectorAll('.media-item');
   cards.forEach(card => {
     card.addEventListener('click', (e) => {
-      if (e.target.closest('.media-checkbox') || e.target.closest('.action-delete-media')) return;
+      if (e.target.closest('.media-checkbox') || e.target.closest('.media-action-btn')) return;
       const p = card.dataset.path;
       if (window.dex) window.dex.openFile(p);
+    });
+  });
+
+  const openBtns = mediaEls.grid.querySelectorAll('.action-open-media');
+  openBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const p = btn.dataset.path;
+      if (window.dex) window.dex.openFile(p);
+    });
+  });
+
+  const renameBtns = mediaEls.grid.querySelectorAll('.action-rename-media');
+  renameBtns.forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const p = btn.dataset.path;
+      // Get the old filename (without extension for ease of editing, or with extension)
+      const parts = p.split(/[\/\\]/);
+      const oldName = parts[parts.length - 1];
+      const newName = prompt('Nhập tên file mới (không bao gồm đuôi file):', oldName.split('.')[0]);
+      if (newName && newName.trim() !== '') {
+        const res = await window.dex.renameFile({ oldPath: p, newName: newName.trim() });
+        if (res && res.success) {
+          showToast('Đổi tên file thành công', 'success');
+          fetchMedia();
+        } else {
+          showToast(res.error || 'Lỗi khi đổi tên', 'danger');
+        }
+      }
     });
   });
 
