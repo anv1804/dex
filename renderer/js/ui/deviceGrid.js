@@ -144,27 +144,27 @@ export function renderDevices() {
         </div>
 
         <div class="card-actions">
-          ${isRecording ? 
-            `<button class="btn btn-sm btn-outline btn-danger action-stop-record" data-serial="${d.serial}" title="Dừng quay video">
-              <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect></svg>
-             </button>`
-            :
-            `<button class="btn btn-sm ${isMirroring ? 'btn-danger action-stop-mirror active' : 'btn-primary action-mirror'}" data-serial="${d.serial}" title="${isMirroring ? 'Dừng chiếu' : 'Chiếu màn hình'}">
-              ${isMirroring
-                ? '<svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="6" width="12" height="12"></rect></svg>'
-                : '<svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>'
-              }
-            </button>`
-          }
-          <button class="btn btn-sm btn-outline action-screen-off ${status.screenOff ? 'active' : ''}" data-serial="${d.serial}" title="Tắt màn hình thiết bị" ${!isMirroring ? 'disabled style="opacity:0.5;cursor:not-allowed;"' : ''}>
+          <button class="btn btn-sm ${isMirroring ? 'btn-danger action-stop-mirror active' : 'btn-primary action-mirror'}" data-serial="${d.serial}" title="${isMirroring ? 'Dừng chiếu' : 'Chiếu màn hình'}">
+            ${isMirroring
+              ? '<svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="6" width="12" height="12"></rect></svg>'
+              : '<svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>'
+            }
+          </button>
+          <button class="btn btn-sm action-screen-off ${status.screenOff ? 'btn-primary active' : 'btn-outline'}" data-serial="${d.serial}" title="Tắt màn hình thiết bị" ${!isMirroring ? 'disabled style="opacity:0.5;cursor:not-allowed;"' : ''}>
             <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
           </button>
           <button class="btn btn-sm btn-outline action-screenshot" data-serial="${d.serial}" title="Chụp ảnh màn hình" ${!isMirroring ? 'disabled style="opacity:0.5;cursor:not-allowed;"' : ''}>
             <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
           </button>
-          <button class="btn btn-sm btn-outline action-record" data-serial="${d.serial}" title="Quay màn hình ngầm" ${!isMirroring ? 'disabled style="opacity:0.5;cursor:not-allowed;"' : ''}>
-            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="3" fill="currentColor"></circle></svg>
-          </button>
+          ${isRecording ? 
+            `<button class="btn btn-sm btn-danger action-stop-record active" data-serial="${d.serial}" title="Dừng quay video">
+              <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="6" width="12" height="12"></rect></svg>
+             </button>`
+            :
+            `<button class="btn btn-sm btn-outline action-record" data-serial="${d.serial}" title="Quay màn hình ngầm" ${!isMirroring ? 'disabled style="opacity:0.5;cursor:not-allowed;"' : ''}>
+              <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="3" fill="currentColor"></circle></svg>
+            </button>`
+          }
           <button class="btn btn-sm btn-outline action-proxy" data-serial="${d.serial}" title="Cấu hình Proxy" ${!isMirroring ? 'disabled style="opacity:0.5;cursor:not-allowed;"' : ''}>
             <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"></path><path d="M1.42 9a16 16 0 0 1 21.16 0"></path><path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path><line x1="12" y1="20" x2="12.01" y2="20"></line></svg>
           </button>

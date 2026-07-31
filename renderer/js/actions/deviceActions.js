@@ -54,8 +54,12 @@ export async function startMirror(serial, turnScreenOff = false) {
         await window.dex.stopMirror(serial);
       }
       const res = await window.dex.startMirror(serial, { turnScreenOff });
-      if (res && res.success) showToast(turnScreenOff ? `Đã tắt màn hình thật cho ${serial}` : `Đã bắt đầu chiếu ${serial}`, 'success');
-      else showToast(`Không thể khởi chạy mirror cho ${serial}`, 'danger');
+      if (res && res.success) {
+        showToast(turnScreenOff ? `Đã tắt màn hình thật cho ${serial}` : `Đã bắt đầu chiếu ${serial}`, 'success');
+        fetchDevices();
+      } else {
+        showToast(`Không thể khởi chạy mirror cho ${serial}`, 'danger');
+      }
     } catch(e) {
       showToast('Lỗi khi chiếu màn hình', 'danger');
     }
@@ -66,8 +70,12 @@ export async function stopMirror(serial) {
   await withLoading(serial, async () => {
     try {
       const res = await window.dex.stopMirror(serial);
-      if (res && res.success) showToast(`Stopped mirror for ${serial}`, 'info');
-      else showToast(`Failed to stop mirror for ${serial}`, 'danger');
+      if (res && res.success) {
+        showToast(`Stopped mirror for ${serial}`, 'info');
+        fetchDevices();
+      } else {
+        showToast(`Failed to stop mirror for ${serial}`, 'danger');
+      }
     } catch(e) {
       showToast('Error stopping mirror', 'danger');
     }
@@ -112,8 +120,12 @@ export async function startRecording(serial) {
   await withLoading(serial, async () => {
     try {
       const res = await window.dex.startRecording(serial);
-      if (res && res.success) showToast(`Started recording ${serial}`, 'success');
-      else showToast(`Failed to record ${serial}`, 'danger');
+      if (res && res.success) {
+        showToast(`Started recording ${serial}`, 'success');
+        fetchDevices();
+      } else {
+        showToast(`Failed to record ${serial}`, 'danger');
+      }
     } catch(e) {
       showToast('Error starting recording', 'danger');
     }
@@ -124,8 +136,12 @@ export async function stopRecording(serial) {
   await withLoading(serial, async () => {
     try {
       const res = await window.dex.stopRecording(serial);
-      if (res && res.success) showToast(`Stopped recording ${serial}`, 'info');
-      else showToast(`Failed to stop recording ${serial}`, 'danger');
+      if (res && res.success) {
+        showToast(`Stopped recording ${serial}`, 'info');
+        fetchDevices();
+      } else {
+        showToast(`Failed to stop recording ${serial}`, 'danger');
+      }
     } catch(e) {
       showToast('Error stopping recording', 'danger');
     }
