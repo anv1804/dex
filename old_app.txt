@@ -1,0 +1,62 @@
+Created At: 2026-07-31T04:29:30Z
+Completed At: 2026-07-31T04:29:30Z
+File Path: `file:///home/anv/Documents/tools/dex/renderer/js/app.js`
+Total Lines: 1347
+Total Bytes: 56518
+Showing lines 165 to 260
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+165:       updateSelectionUI();
+166:       return;
+167:     }
+168: 
+169:     els.deviceGrid.innerHTML = filtered.map(d => {
+170:       const status = getDeviceStatus(d.serial);
+171:       const isSelected = selectedSerials.has(d.serial);
+172:       const isMirroring = status.state === 'mirror';
+173:       const isRecording = status.state === 'recording';
+174:       
+175:       let statusText = 'Sẵn sàng';
+176:       if (isMirroring) statusText = 'Mirroring';
+177:       if (isRecording) statusText = 'Recording';
+178: 
+179:       return `
+180:         <div class="device-card ${isMirroring ? 'mirroring' : ''} ${isSelected ? 'selected' : ''}" data-serial="${d.serial}">
+181:           <div class="card-header">
+182:             <div class="device-info">
+183:               <span class="device-icon">📱</span>
+184:               <div>
+185:                 <h3 class="device-name">${d.manufacturer || 'Unknown'} ${d.model || ''}</h3>
+186:                 <span class="device-serial">${d.serial}</span>
+187:               </div>
+188:             </div>
+189:             <label class="custom-checkbox-container" title="Chọn thiết bị">
+190:               <input type="checkbox" class="device-select" value="${d.serial}" ${isSelected ? 'checked' : ''}>
+191:               <span class="custom-checkmark"></span>
+192:             </label>
+193:           </div>
+194:           
+195:           <div class="card-badges">
+196:             <span class="badge conn-${(d.connectionType || 'usb').toLowerCase()}">${d.connectionType || 'USB'}</span>
+197:             <span class="badge">Android ${d.androidVer
+<truncated 4414 bytes>
+ height="16" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="3" fill="currentColor"></circle></svg>
+242:                  </button>`
+243:             }
+244:             <button class="btn btn-sm btn-outline action-proxy" data-serial="${d.serial}" title="Cấu hình Proxy (IP:Port:User:Pass)">
+245:               <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"></path><path d="M1.42 9a16 16 0 0 1 21.16 0"></path><path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path><line x1="12" y1="20" x2="12.01" y2="20"></line></svg>
+246:             </button>
+247:             <div class="dropdown">
+248:               <button class="btn btn-sm btn-ghost action-more" data-serial="${d.serial}" title="Thao tác khác">
+249:                 <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
+250:               </button>
+251:               <div class="dropdown-menu">
+252:                 <button class="dropdown-item action-turn-off-screen" data-serial="${d.serial}">🌙 Tắt màn hình (Chế độ nghỉ)</button>
+253:                 <button class="dropdown-item action-tcpip" data-serial="${d.serial}">📶 Bật kết nối ADB WiFi</button>
+254:                 <button class="dropdown-item action-reboot" data-serial="${d.serial}">🔄 Khởi động lại máy</button>
+255:               </div>
+256:             </div>
+257:           </div>
+258:         </div>
+259:       `;
+260:     }).join('');
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

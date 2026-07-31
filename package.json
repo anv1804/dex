@@ -1,0 +1,21 @@
+{
+  "name": "dex-device-manager",
+  "version": "1.0.0",
+  "description": "Multi-device Android manager and scrcpy controller for Linux",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "keywords": [
+    "android",
+    "scrcpy",
+    "adb",
+    "electron",
+    "linux"
+  ],
+  "author": "Antigravity",
+  "license": "MIT",
+  "dependencies": {
+    "electron": "^31.2.0"
+  }
+}
